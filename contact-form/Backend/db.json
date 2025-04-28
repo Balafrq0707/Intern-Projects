@@ -1,0 +1,40 @@
+{
+  "info": [
+    {
+      "name": "bala",
+      "mobile": "85223697",
+      "email": "bala@gmail.com",
+      "country": "India",
+      "pincode": "741258"
+    },
+    {
+      "name": "Rahul",
+      "mobile": "741236589",
+      "email": "rahul@gmail.com",
+      "country": "India",
+      "pincode": "600045"
+    },
+    {
+      "name": "Gautam",
+      "mobile": "698258741",
+      "email": "gautam@gmail.com",
+      "country": "India",
+      "pincode": "400058"
+    },
+    {
+      "id": 1,
+      "name": "Rakshit",
+      "mobile": "785412364",
+      "email": "rakshit@gmail.com",
+      "country": "India",
+      "pincode": "800025"
+    },
+    {
+      "name": "Nitish",
+      "mobile": "789546324",
+      "email": "nitish@gmail.com",
+      "country": "Nepal",
+      "pincode": "700041"
+    }
+  ]
+}
