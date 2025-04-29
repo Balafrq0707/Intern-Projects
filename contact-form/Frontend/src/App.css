@@ -1,140 +1,122 @@
-/* Basic layout */
-.container {
-  width: 80%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: Arial, sans-serif;
-}
-
-/* Form styling */
-.info-form {
-  background-color: #f9f9f9;
+  background-color: #f2f2f2;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 40px;
+  color: #333;
 }
 
-.info-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+/* Buttons */
+button {
+  padding: 10px 16px;
+  margin: 0 10px 20px 0;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Container */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Contact Form */
+.info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-group label {
+label {
+  margin-bottom: 6px;
   font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 5px;
+input {
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
-.form-group button {
-  width: 100%;
-  padding: 12px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
+input:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
-.form-group button:hover {
-  background-color: #45a049;
-}
-
-/* Displaying submitted information */
+/* Contact List */
 .submitted-info {
-  margin-top: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.submitted-info h2 {
+h2 {
+  margin-bottom: 16px;
+  font-size: 1.2rem;
   text-align: center;
-  color: #333;
 }
 
 .info-list {
-  list-style-type: none;
-  padding-left: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .info-item {
-  background-color: #f4f4f4;
-  padding: 20px;
-  margin: 10px 0;
-  border-radius: 8px;
-  font-size: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.3s ease;
-}
-
-.info-item:hover {
-  background-color: #e8e8e8;
-}
-
-.info-details {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.info-item strong {
-  font-size: 18px;
-  color: #333;
-}
-
-.edit-button {
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  padding: 8px 16px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #007bff;
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+  line-height: 1.4;
 }
 
-.edit-button:hover {
-  background-color: #e68900;
+.info-item p {
+  margin-bottom: 4px;
+  font-size: 0.95rem;
 }
 
-/* Mobile responsiveness */
+.empty-message {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+/* Responsive */
 @media (max-width: 600px) {
-  .container {
-    width: 95%;
-  }
-
-  .form-group input,
-  .form-group button {
-    padding: 10px;
-    font-size: 14px;
+  .container,
+  .submitted-info {
+    padding: 16px;
   }
 
   .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .info-item strong {
-    font-size: 16px;
-  }
-
-  .info-details {
-    margin-top: 10px;
+    padding: 10px;
   }
 }

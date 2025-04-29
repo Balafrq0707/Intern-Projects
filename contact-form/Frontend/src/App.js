@@ -1,147 +1,72 @@
-import { useState, useEffect } from "react";
-import './App.css';
+  import { useState, useEffect } from "react";
+  import './App.css';
+  import ContactForm from "./components/ContactForm";
+  import ContactList from "./components/ContactList"; 
+  function App() {
+    const [name, setName] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [email, setMail] = useState('');
+    const [country, setCountry] = useState('');
+    const [pincode, setPincode] = useState('');
+    const [infoList, setInfoList] = useState([]);
+    const [clickEvent, setClickEvent] = useState("");
 
-function App() {
-  const [name, setName] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [email, setMail] = useState('');
-  const [country, setCountry] = useState('');
-  const [pincode, setPincode] = useState('');
-  const [infoList, setInfoList] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:3001/info')
-      .then(res => res.json())
-      .then(data => {
-        setInfoList(data); 
-      })
-      .catch(err => {
-        console.log("Error fetching data:", err);
-      });
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newInfo = { name, mobile, email, country, pincode };
-
-    try {
-      const res = await fetch('http://localhost:3001/info', {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newInfo)
-      });
-
-      if (res.ok) {
-        console.log('Data submitted successfully!', newInfo);
-
-        setName('');
-        setMobile('');
-        setMail('');
-        setCountry('');
-        setPincode('');
-
-        const updatedData = await fetch('http://localhost:3001/info')
+    useEffect(() => {
+      if (clickEvent === "list") {
+        fetch('http://localhost:3001/info')
           .then(res => res.json())
-          .then(data => data)
-          .catch(err => {
-            console.log("Error fetching updated data:", err);
-          });
-
-        setInfoList(updatedData);
+          .then(data => setInfoList(data))
+          .catch(err => console.log("Error fetching data:", err));
       }
-    } catch (error) {
-      console.log("Error submitting data", error);
-    }
-  };
+    }, [clickEvent]);
+    
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      const newInfo = { name, mobile, email, country, pincode };
 
-  return (
-    <div className="container">
-      <form onSubmit={handleSubmit} className="info-form">
-        <h2>Submit Your Information</h2>
+      try {
+        const res = await fetch('http://localhost:3001/info', {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newInfo)
+        });
 
-        <div className="form-group">
-          <label htmlFor='name'>Name</label>
-          <input
-            type="text"
-            value={name}
-            required
-            placeholder="Enter your name"
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+        if (res.ok) {
+          console.log('Data submitted successfully!', newInfo);
 
-        <div className="form-group">
-          <label htmlFor='mobile'>Phone No:</label>
-          <input
-            type="text"
-            value={mobile}
-            required
-            placeholder="Your Mobile Number"
-            onChange={(e) => setMobile(e.target.value)}
-          />
-        </div>
+          setName('');
+          setMobile('');
+          setMail('');
+          setCountry('');
+          setPincode('');
 
-        <div className="form-group">
-          <label htmlFor='email'>Email ID</label>
-          <input
-            type="email"
-            value={email}
-            required
-            placeholder="Email ID"
-            onChange={(e) => setMail(e.target.value)}
-          />
-        </div>
+          const updatedData = await fetch('http://localhost:3001/info')
+            .then(res => res.json())
+            .then(data => data)
+            .catch(err => {
+              console.log("Error fetching updated data:", err);
+            });
 
-        <div className="form-group">
-          <label htmlFor='country'>Country</label>
-          <input
-            type="text"
-            value={country}
-            required
-            placeholder="Enter Your Country"
-            onChange={(e) => setCountry(e.target.value)}
-          />
-        </div>
+          setInfoList(updatedData);
+        }
+      } catch (error) {
+        console.log("Error submitting data", error);
+      }
+    };
 
-        <div className="form-group">
-          <label htmlFor='pincode'>PinCode</label>
-          <input
-            type="text"
-            value={pincode}
-            required
-            placeholder="Pincode"
-            onChange={(e) => setPincode(e.target.value)}
-          />
-        </div>
+    return (
+      <div className="button-group">
+        <button onClick={()=>setClickEvent("list")}>Contact List</button>
+        <button onClick={()=>setClickEvent("form")}>Add Contact</button>
 
-        <div className="form-group">
-          <button type="submit">Submit</button>
-        </div>
-      </form>
+        {clickEvent === "list" && <ContactList infoList={infoList}  />}
+        {clickEvent ==="form" && <ContactForm handleSubmit={handleSubmit} name={name} setName={setName} mobile={mobile} setMobile={setMobile} email={email} setMail={setMail} country={country} setCountry={setCountry} pincode={pincode} setPincode={setPincode}/>}
 
-      <div className="submitted-info">
-        <h2>Submitted Information</h2>
-        {infoList.length > 0 ? (
-          <ul className="info-list">
-            {infoList.map((entry, index) => (
-              <li key={index} className="info-item">
-                <div className="info-details">
-                  <strong>{entry.name}</strong>
-                  <p>Phone: {entry.mobile}</p>
-                  <p>Email: {entry.email}</p>
-                </div>
-                <button className="edit-button">Edit</button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No information submitted yet.</p>
-        )}
+
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-export default App;
+  export default App;
