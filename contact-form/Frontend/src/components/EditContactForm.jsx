@@ -8,6 +8,8 @@ const EditContactForm = ({ entry, onClose }) => {
     country: '',
     pincode: ''
   });
+  const [originalName, setOriginalName] = useState('');
+
 
   useEffect(() => {
     if (entry) {
@@ -18,6 +20,7 @@ const EditContactForm = ({ entry, onClose }) => {
         country: entry.country,
         pincode: entry.pincode
       });
+      setOriginalName(entry.name); 
     }
   }, [entry]);
 
@@ -28,7 +31,7 @@ const EditContactForm = ({ entry, onClose }) => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    const res = await fetch(`http://localhost:3001/info/${formData.name}`, {
+    const res = await fetch(`http://localhost:3001/info/${originalName}`, {
         method: "PUT", 
         headers: {
             'Content-Type': 'application/json'
@@ -37,6 +40,8 @@ const EditContactForm = ({ entry, onClose }) => {
     })
     if (res.ok) {
         console.log("Updated Contact:", formData);
+        alert("Contact Updated Successfully");
+
         onClose(); 
     } else {
         console.error("Failed to update contact");

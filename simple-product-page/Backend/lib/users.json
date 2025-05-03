@@ -1,0 +1,27 @@
+[
+  {
+    "username": "Jason",
+    "email": "jason@gmail.com",
+    "password": "$2b$10$0SBRh2geKAp2jbHbTGJJl.uC8UEBX47iDGn.p4JiBV25n/YLHpJTK",
+    "orders": []
+  },
+  {
+    "username": "Henry",
+    "email": "henry@gmail.com",
+    "password": "$2b$10$WsnipBRiw5g22ljAJMSk/eZ11IURA5pviDhgdEYr0wX.FJ84bhwWC", 
+    "orders": []
+  },
+  {
+    "userName": "Jake",
+    "email": "jake@gmail.com",
+    "password": "$2b$10$486KNBq/8VCT7nel3iHMK.KfuYJIsYy6gP4jXgL7ONPR0CojYoRFa", 
+    "orders": []
+  },
+  {
+    "userName": "Mark",
+    "email": "mark@gmail.com",
+    "password": "$2b$10$/QkLAiaefro5mBv4vgKUaOU0cr.Rma4tHPC8qC3yBJWVpDW8haAUi", 
+    "orders": []
+
+  }
+]

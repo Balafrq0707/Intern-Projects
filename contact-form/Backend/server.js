@@ -37,22 +37,27 @@ app.post('/info', (req, res) => {
 });
 
 app.put('/info/:name', (req,res)=>{
-    const { name } = req.params;
-    const updatedInfo = req.body; 
-    const index = db.info.findIndex(item => item.name === name);
-  if (index !== -1) {
-    db.info[index] = { ...db.info[index], ...updatedInfo };
+  const { name } = req.params;
+  const updatedInfo = req.body; 
+  const index = db.info.findIndex(item => item.name === name);
 
-    fs.writeFile(dbPath, JSON.stringify(db, null, 2), (err) => {
-      if (err) {
-        console.error("Error writing to file:", err);
-        return res.status(500).json({ error: 'Failed to update data' });
-      }
-      console.log("Data updated successfully");
-      res.status(200).json(db.info[index]);
-    });
-  } 
-})
+  if (index !== -1) {
+      db.info[index] = { ...db.info[index], ...updatedInfo };
+
+      fs.writeFile(dbPath, JSON.stringify(db, null, 2), (err) => {
+          if (err) {
+              console.error("Error writing to file:", err);
+              return res.status(500).json({ error: 'Failed to update data' });
+          }
+          console.log("Data updated successfully");
+          res.status(200).json(db.info[index]);
+      });
+  } else {
+
+      res.status(404).json({ error: `Entry with name '${name}' not found` });
+  }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
