@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../App.css';
+import { useCart } from './Cart/CartContext';
 
 
 const AuthForm = () => {
@@ -7,6 +8,7 @@ const AuthForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [clickEvent, setClickEvent] = useState('');
+  const { setSession } = useCart();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +52,7 @@ const AuthForm = () => {
 
       if (res.ok) {
         console.log(`Login Successful! Hello ${userName}`);
+        setSession(res); 
         setUserName('');
         setEmail('');
         setPassword('');
@@ -70,7 +73,7 @@ const AuthForm = () => {
 
       <button className="login-toggle-btn" onClick={() => setClickEvent('Login')}>
         Login
-      </button>
+      </button>     
 
       {clickEvent && (
         <div className="form-container">

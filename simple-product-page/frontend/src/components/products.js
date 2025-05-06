@@ -17,11 +17,11 @@ const ProductList = () => {
 
   const handleAddToCart = (product) => {
     addToCart(product); 
-    // alert(`${product.title} added to cart!`);
+
   };
 
   return (
-    <div className="product-list">
+    <div className="product-list" id="products">
       <h2>All Products</h2>
       <div className="product-grid">
         {products.map((product) => (

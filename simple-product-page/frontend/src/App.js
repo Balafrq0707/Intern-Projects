@@ -1,21 +1,26 @@
-import React from 'react';
-import './App.css';
-import { CartProvider } from './components/Cart/CartContext';
-import AuthForm from './components/AuthForm';
+import React, { useState } from 'react';
+import NavBar from './components/NavBar'
 import ProductList from './components/products';
-import NavBar from './components/NavBar';
+import DisplayCart from './components/Cart/DisplayCart'
+import { CartProvider } from './components/Cart/CartContext';
+import AuthForm from './components/AuthForm'
+import './App.css';
 
-const App = () => {
+function App() {
+  const [showCart, setShowCart] = useState(false);
 
   return (
-    <div>
-      <CartProvider>
-        <NavBar /> 
-        <AuthForm/>
-        <ProductList/>
-      </CartProvider>
-    </div>
+    <CartProvider>
+      <NavBar toggleCart={() => setShowCart(true)} />
+      <AuthForm />
+      {showCart ? (
+        <DisplayCart onBack={() => setShowCart(false)} />
+      ) : (
+        <ProductList />
+      )}
+      
+    </CartProvider>
   );
-};
+}
 
 export default App;
