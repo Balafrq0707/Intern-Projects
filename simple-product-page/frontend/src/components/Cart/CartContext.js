@@ -4,12 +4,20 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const [session, setSession] = useState(null); 
+  
+  const [session, setSessionState] = useState(() => {
+    const storedSession = localStorage.getItem('session');
+    return storedSession ? JSON.parse(storedSession) : null;
+  });
+
+  const setSession = (sessionData) => {
+    setSessionState(sessionData);
+    localStorage.setItem('session', JSON.stringify(sessionData));
+  };
 
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existingProduct = prevCart.find(item => item.id === product.id);
-
       if (existingProduct) {
         return prevCart.map(item =>
           item.id === product.id
@@ -17,7 +25,6 @@ export const CartProvider = ({ children }) => {
             : item
         );
       }
-
       return [...prevCart, { ...product, quantity: 1 }];
     });
   };
@@ -40,16 +47,17 @@ export const CartProvider = ({ children }) => {
       }
     });
   };
+
   const decreaseQuantity = (product) => {
-    setCart((prevCart) => {
-      return prevCart
+    setCart((prevCart) =>
+      prevCart
         .map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
-        .filter((item) => item.quantity > 0); 
-    });
+        .filter((item) => item.quantity > 0)
+    );
   };
 
   const proceedToBuy = (cartItems) => {
@@ -60,7 +68,6 @@ export const CartProvider = ({ children }) => {
       price: item.price
     }));
   };
-  
 
   const getCartItemCount = () => {
     return cart.reduce((total, item) => total + (item?.quantity || 0), 0);
@@ -75,9 +82,10 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         getCartItemCount,
-        setCart, 
+        setCart,
         session,
-        setSession, 
+        setSession,
+        logout,
         proceedToBuy
       }}
     >

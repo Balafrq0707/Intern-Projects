@@ -1,151 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { useCart } from './Cart/CartContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-
-const AuthForm = () => {
+const AuthForm = ({ type }) => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [clickEvent, setClickEvent] = useState('');
-  const { setSession } = useCart();
+  const [mode, setMode] = useState(type || 'Login'); 
+  const { setSession, getCartItemCount} = useCart();
+
+  const navigate = useNavigate(); 
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/login') setMode('Login');
+    else if (location.pathname === '/register') setMode('Register');
+  }, [location.pathname]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newEntry = { userName, email, password };
+    const endpoint = mode === 'Register' ? 'register' : 'login';
 
     try {
-      const res = await fetch('http://localhost:3001/auth/register', {
+      const res = await fetch(`http://localhost:3001/auth/${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry),
       });
 
+      const data = await res.json();
+      console.log("API response:", data);
+
+
       if (res.ok) {
-        console.log('Data submitted successfully!', newEntry);
+        if (mode === 'Login') {
+          setSession(data.user); 
+          console.log(`Login Successful! Hello ${data.user?.userName}`); 
+          if(getCartItemCount()===0){
+            navigate('/');
+          }
+          else{
+             navigate('/cart/summary');
+            }          
+        } else {
+          console.log('Registration successful!');
+        }
+      
         setUserName('');
         setEmail('');
         setPassword('');
-      } else {
-        const errorData = await res.json();
-        console.error('Server responded with an error:', errorData.message);
       }
-    } catch (error) {
-      console.error('Network or server error:', error);
-    }
-  };
-
-  const handleAccess = async (e) => {
-    e.preventDefault();
-    const newEntry = { userName, email, password };
-
-    try {
-      const res = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newEntry),
-      });
-
-      if (res.ok) {
-        console.log(`Login Successful! Hello ${userName}`);
-        setSession(res); 
-        setUserName('');
-        setEmail('');
-        setPassword('');
-      } else {
-        const errorData = await res.json();
-        console.error('Server responded with an error:', errorData.message);
-      }
-    } catch (error) {
-      console.error('Network or server error:', error);
-    }
-  };
-
+      
+      else {
+        console.error('Server error:', data.message);
+      }  
+  }
+  catch (error) {
+    console.error('Network error:', error);
+  }
+}
   return (
     <div>
-      <button className="register-toggle-btn" onClick={() => setClickEvent('Register')}>
-        Register
-      </button>
+      <div className="toggle-buttons">
+        <button
+          className="register-toggle-btn"
+          onClick={() => setMode('Register')}
+          disabled={mode === 'Register'}
+        >
+          Register
+        </button>
+        <button
+          className="login-toggle-btn"
+          onClick={() => setMode('Login')}
+          disabled={mode === 'Login'}
+        >
+          Login
+        </button>
+      </div>
 
-      <button className="login-toggle-btn" onClick={() => setClickEvent('Login')}>
-        Login
-      </button>     
+      <div className="form-container">
+        <h2>{mode}</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>User Name</label>
+            <input
+              type="text"
+              value={userName}
+              required
+              placeholder="Enter your name"
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
 
-      {clickEvent && (
-        <div className="form-container">
-          <h2>{clickEvent}</h2>
-          <form onSubmit={clickEvent === 'Register' ? handleSubmit : handleAccess}>
-            <div className="input-group">
-              <label htmlFor="userName">User Name</label>
-              <input
-                type="text"
-                value={userName}
-                required
-                placeholder="Enter your name"
-                onChange={(e) => setUserName(e.target.value)}
-              />
-            </div>
+          <div className="input-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              required
+              placeholder="Enter your Email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-            <div className="input-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="text"
-                value={email}
-                required
-                placeholder="Enter your Email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              required
+              placeholder="Enter your Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-            <div className="input-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                value={password}
-                required
-                placeholder="Enter your Password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          <button type="submit">{mode}</button>
 
-            <button type="submit">{clickEvent}</button>
-
-            {clickEvent === 'Login' ? (
-              <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+            {mode === 'Login' ? (
+              <>
                 Don’t have an account?{' '}
                 <span
-                  style={{
-                    color: '#007bff',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                  }}
-                  onClick={() => setClickEvent('Register')}
+                  onClick={() => setMode('Register')}
+                  style={{ color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}
                 >
-                  SignUp here
+                  Sign up here
                 </span>
-              </p>
+              </>
             ) : (
-              <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <>
                 Already a member?{' '}
                 <span
-                  style={{
-                    color: '#007bff',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                  }}
-                  onClick={() => setClickEvent('Login')}
+                  onClick={() => setMode('Login')}
+                  style={{ color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}
                 >
                   Login here
                 </span>
-              </p>
+              </>
             )}
-          </form>
-        </div>
-      )}
+          </p>
+        </form>
+      </div>
     </div>
   );
 };

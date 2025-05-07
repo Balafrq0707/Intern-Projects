@@ -1,11 +1,11 @@
 [
   {
-    "username": "Jason",
+    "userName": "Jason",
     "email": "jason@gmail.com",
-    "password": "$2b$10$0SBRh2geKAp2jbHbTGJJl.uC8UEBX47iDGn.p4JiBV25n/YLHpJTK"
+    "password": "$2b$10$0SBRh2geKAp2jbHbTGJJl.uC8UEBX47iDGn.p4JiBV25n/YLHpJTK" 
   },
   {
-    "username": "Henry",
+    "userName": "Henry",
     "email": "henry@gmail.com",
     "password": "$2b$10$WsnipBRiw5g22ljAJMSk/eZ11IURA5pviDhgdEYr0wX.FJ84bhwWC"
   },

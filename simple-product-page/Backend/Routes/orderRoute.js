@@ -8,14 +8,13 @@ router.post('/orders', (req, res) => {
     const orderData = req.body;
   
     
-    const ordersPath = path.join(__dirname, 'order.json');
+    const ordersPath = path.join(__dirname, '../lib/orders.json');
     fs.readFile(ordersPath, 'utf8', (err, data) => {
       if (err) {
         return res.status(500).json({ message: 'Error reading orders file' });
       }
       const orders = JSON.parse(data);
-      orders.orders.push(orderData);
-  
+      orders.orders.push(orderData);   
       fs.writeFile(ordersPath, JSON.stringify(orders, null, 2), 'utf8', (writeErr) => {
         if (writeErr) {
           return res.status(500).json({ message: 'Error saving orders file' });

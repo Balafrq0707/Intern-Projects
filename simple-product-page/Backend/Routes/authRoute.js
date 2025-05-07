@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const dbPath = path.join(__dirname, '../lib/users.json');
-const sessionPath = path.join(__dirname, '../lib/session.json');
+// const sessionPath = path.join(__dirname, '../lib/session.json');
 let db = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
 
 const router = express.Router();
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
         });
 
         
-        fs.writeFileSync(sessionPath, JSON.stringify({ userName: validUser.userName }), 'utf-8');
+        // fs.writeFileSync(sessionPath, JSON.stringify({ userName: validUser.userName }), 'utf-8');
 
         return res.status(200).json({
             message: "Login successful",

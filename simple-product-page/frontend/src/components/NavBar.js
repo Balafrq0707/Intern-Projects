@@ -1,18 +1,19 @@
-  import React from 'react';
-import { useCart } from './Cart/CartContext';
+import { useNavigate } from 'react-router-dom';
+import {useCart} from './Cart/CartContext'
 
-const NavBar = ({ toggleCart }) => {
+const NavBar = () => {
+  const navigate = useNavigate();
   const { getCartItemCount } = useCart();
 
   return (
     <nav className="navbar">
       <div className="navbar-left">
-          <a href="#products" className="navbar-title">
-             <h2>MyShop</h2>
-          </a>
+        <a href="/" className="navbar-title">
+          <h2>MyShop</h2>
+        </a>
       </div>
       <div className="navbar-right">
-        <button className="cart-icon" onClick={toggleCart}>
+        <button className="cart-icon" onClick={() => navigate('/cart')}>
           🛒
           {getCartItemCount() > 0 && (
             <span className="cart-count">{getCartItemCount()}</span>
@@ -23,4 +24,4 @@ const NavBar = ({ toggleCart }) => {
   );
 };
 
-export default NavBar;
+export default NavBar; 
