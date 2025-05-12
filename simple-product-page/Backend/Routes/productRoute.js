@@ -1,14 +1,21 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const pool = require('../db/connectDB')
 
-const dbPath = path.join(__dirname, '../lib/products.json');
-let db = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
 
 const router = express.Router();
 
 router.get('/products', async (req, res) => {
-    res.json(db); 
+    try {
+        const [products] = await pool.query('SELECT id, title, description, price, quantity FROM products');
+        console.log(products); // Log products to verify the data
+        res.json(products);
+    } catch (err) {
+        console.error('Error fetching products:', err);
+        res.status(500).json({ message: err.message });
+    }
 });
+
 
 module.exports = router;

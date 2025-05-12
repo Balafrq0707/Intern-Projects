@@ -47,11 +47,10 @@ const AuthForm = ({ type }) => {
             }          
         } else {
           console.log('Registration successful!');
+          setUserName('');
+          setEmail('');
+          setPassword('');
         }
-      
-        setUserName('');
-        setEmail('');
-        setPassword('');
       }
       
       else {

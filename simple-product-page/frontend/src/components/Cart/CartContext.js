@@ -13,7 +13,7 @@ export const CartProvider = ({ children }) => {
   const setSession = (sessionData) => {
     setSessionState(sessionData);
     localStorage.setItem('session', JSON.stringify(sessionData));
-  };
+  };  
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -51,10 +51,7 @@ export const CartProvider = ({ children }) => {
   const decreaseQuantity = (product) => {
     setCart((prevCart) =>
       prevCart
-        .map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+        .map((item) =>item.id === product.id ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter((item) => item.quantity > 0)
     );
@@ -85,7 +82,6 @@ export const CartProvider = ({ children }) => {
         setCart,
         session,
         setSession,
-        logout,
         proceedToBuy
       }}
     >
