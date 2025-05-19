@@ -8,18 +8,24 @@ const ProductList = () => {
 
   const { addToCart } = useCart();
 
+  const token = localStorage.getItem('token');
+
+
   useEffect(() => {
-    fetch('http://localhost:3001/api/products')
+    fetch('http://localhost:3001/api/products', {
+      headers: {
+         'Authorization': `Bearer ${token}`
+      }
+    })
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((error) => console.error('Error fetching products:', error));
-  }, []);
+  },);
 
   const handleAddToCart = (product) => {
     addToCart(product);
   };
 
-  // Pagination logic
   const totalPages = Math.ceil(products.length / productsPerPage);
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -36,9 +42,11 @@ const ProductList = () => {
   return (
 
     <div className="product-list" id="products">
-      <h2>All Products</h2>
-
-      <div className="product-grid">
+      <div>
+         <h2>All Products</h2>
+         <br/>
+      </div>
+      <div className="product-grid  ">
         {currentProducts.length > 0 ? (
           currentProducts.map((product) => (
             <div className="product-card" key={product.id}>
@@ -53,7 +61,6 @@ const ProductList = () => {
         )}
       </div>
 
-      {/* Pagination controls */}
       {totalPages > 1 && (
         <div className="pagination-controls">
           <button onClick={goToPreviousPage} disabled={currentPage === 1}>

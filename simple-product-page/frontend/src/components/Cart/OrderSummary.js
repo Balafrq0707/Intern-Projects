@@ -1,9 +1,17 @@
 import { useCart } from './CartContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector} from 'react-redux';
+// import { setSession, logout } from '../slices/Slice';
+
+
 
 const OrderSummary = () => {
-  const { cart, proceedToBuy, session } = useCart();
+  const { cart, proceedToBuy } = useCart();
+  const session = useSelector((state) => state.session.session);
+  // const dispatch = useDispatch();
+  
+
   const [orderSummary, setOrderSummary] = useState([]);
   const navigate = useNavigate();
 
@@ -20,7 +28,7 @@ const OrderSummary = () => {
     }
 
     const newEntry = {
-      userName: session.userName, 
+      userName: session.username, 
       email: session.email, 
       orderItems: orderSummary, 
     };
@@ -33,7 +41,7 @@ const OrderSummary = () => {
         },
         body: JSON.stringify(newEntry),
       });
-
+      console.log(session)
       if (res.ok) {
         alert('Your order has been successfully placed!');
       } else {

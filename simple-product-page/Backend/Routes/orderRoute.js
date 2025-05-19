@@ -1,106 +1,111 @@
 const express = require('express');
-const pool = require('../db/connectDB');
-
 const router = express.Router();
+const sequelize = require('../db/connectDB')
+const User = require('../Model/AuthModel');
+const Order = require('../Model/orderModel');
+const OrderItem = require('../Model/orderItemsModel');
+const Product = require('../Model/productModel');
+const authenticateToken = require('../Middleware/authMiddleware')
 
-router.get('/orders', async(req, res)=>{
-  try{
-    const [orders] = await pool.query('select id, user_id from orders'); 
-    res.json(orders); 
+
+User.hasMany(Order, { foreignKey: 'user_id' });
+Order.belongsTo(User, { foreignKey: 'user_id' });
+
+Order.hasMany(OrderItem, { foreignKey: 'order_id' });
+OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
+
+OrderItem.belongsTo(Product, { foreignKey: 'product_id' });
+Product.hasMany(OrderItem, { foreignKey: 'product_id' });
+
+
+router.get('/orders', authenticateToken, async (req, res) => {
+  try {
+    const orders = await Order.findAll({ attributes: ['id', 'user_id'] });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(error){
-            res.status(500).json({ message: err.message });
-  }
-})
+});
 
 router.post('/orders', async (req, res) => {
-  const connection = await pool.getConnection();
+  const { userName, email, orderItems } = req.body;
+
+  if (!userName || !email || !Array.isArray(orderItems) || orderItems.length === 0) {
+    return res.status(400).json({ message: 'Invalid request data' });
+  }
+
+  const transaction = await sequelize.transaction();
+
   try {
-    const { userName, email, orderItems } = req.body;
+    let user = await User.findOne({ where: { username: userName, email }, transaction });
 
-    if (!userName || !email || !Array.isArray(orderItems) || orderItems.length === 0) {
-      return res.status(400).json({ message: 'Invalid request data' });
+    if (!user) {
+      user = await User.create({ username: userName, email }, { transaction });
     }
 
-    await connection.beginTransaction();
+    const order = await Order.create({ user_id: user.id }, { transaction });
 
-    // Step 1: Find or create the user
-    const [userRows] = await connection.query(
-      `SELECT id FROM users WHERE userName = ? AND email = ?`,
-   [userName, email]
-    );
-
-    let user_id;
-    if (userRows.length > 0) {
-      user_id = userRows[0].id;
-    } else {
-      const [insertUser] = await connection.query(
-        'INSERT INTO users (user_name, email) VALUES (?, ?)',
-        [userName, email]
-      );
-      user_id = insertUser.insertId;
-    }
-
-    // Step 2: Create the order
-    const [orderResult] = await connection.query(
-      'INSERT INTO orders (user_id) VALUES (?)',
-      [user_id]
-    );
-    const order_id = orderResult.insertId;
-
-    // Step 3: Insert order items
     for (const item of orderItems) {
       const { id: product_id, qty: quantity, price } = item;
       const total_price = quantity * price;
 
-      await connection.query(
-        `INSERT INTO order_items (order_id, product_id, quantity, price_per_unit, total_price)
-         VALUES (?, ?, ?, ?, ?)`,
-        [order_id, product_id, quantity, price, total_price]
-      );
+      await OrderItem.create({
+        order_id: order.id,
+        product_id,
+        quantity,
+        price_per_unit: price,
+        total_price
+      }, { transaction });
     }
 
-    await connection.commit();
-
-    res.status(201).json({ message: 'Order placed successfully', order_id });
+    await transaction.commit();
+    res.status(201).json({ message: 'Order placed successfully', order_id: order.id });
 
   } catch (err) {
-    await connection.rollback();
+    await transaction.rollback();
     console.error('Order creation failed:', err);
     res.status(500).json({ message: 'Failed to place order', error: err.message });
-  } finally {
-    connection.release();
   }
 });
 
+// GET detailed order info by userId
 router.get('/orders/user/:userId/details', async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    const [orderDetails] = await pool.query(
-      `SELECT 
-        o.id AS order_id,
-        o.user_id,
-        oi.product_id,
-        p.title AS product_title,
-        p.description,
-        oi.quantity,
-        oi.price_per_unit,
-        oi.total_price
-      FROM orders o
-      JOIN order_items oi ON o.id = oi.order_id
-      JOIN products p ON oi.product_id = p.id
-      WHERE o.user_id = ?`,
-      [userId]
+    const orderDetails = await Order.findAll({
+      where: { user_id: userId },
+      include: [
+        {
+          model: OrderItem,
+          include: [
+            {
+              model: Product,
+              attributes: ['title', 'description']
+            }
+          ]
+        }
+      ]
+    });
+
+    const response = orderDetails.flatMap(order =>
+      order.OrderItems.map(item => ({
+        order_id: order.id,
+        user_id: order.user_id,
+        product_id: item.product_id,
+        product_title: item.Product.title,
+        description: item.Product.description,
+        quantity: item.quantity,
+        price_per_unit: item.price_per_unit,
+        total_price: item.total_price
+      }))
     );
 
-    res.json(orderDetails);
+    res.json(response);
   } catch (err) {
     console.error('Error fetching detailed orders:', err);
     res.status(500).json({ message: 'Failed to retrieve detailed order info.' });
   }
 });
 
-
-
-module.exports = router; 
+module.exports = router;

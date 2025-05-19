@@ -4,16 +4,6 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  
-  const [session, setSessionState] = useState(() => {
-    const storedSession = localStorage.getItem('session');
-    return storedSession ? JSON.parse(storedSession) : null;
-  });
-
-  const setSession = (sessionData) => {
-    setSessionState(sessionData);
-    localStorage.setItem('session', JSON.stringify(sessionData));
-  };  
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -80,8 +70,6 @@ export const CartProvider = ({ children }) => {
         decreaseQuantity,
         getCartItemCount,
         setCart,
-        session,
-        setSession,
         proceedToBuy
       }}
     >

@@ -3,42 +3,154 @@ body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9f9f9;
-  color: #333;
+  color:#262525;
 }
 
-/* NavBar Styles */
+/* Navbar styles */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1e88e5;
+  padding: 10px 20px;
+  background-color: #2d3a3d;
   color: white;
-  padding: 1rem 2rem;
 }
 
-.navbar h2 {
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-title {
+  text-decoration: none;
+  color: white;
+}
+
+.navbar-title h2 {
+  font-size: 1.8rem;
   margin: 0;
 }
 
+/* Navbar-right styles */
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 10px;
+}
+
+h2:hover {
+  cursor: pointer;
+}
+
+/* Dropdown styles */
+.dropdown-content {
+  position: absolute;
+  right: 20px;
+  top: 50px;
+  background-color: white;
+  color: #333;
+  border-radius: 5px;
+  width: 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.dropdown-content ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+}
+
+.dropdown-content li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-content li:hover {
+  background-color: #f5f5f5;
+}
+
+/* Form handlers styles */
+.form-handlers {
+  display: flex;
+}
+
+.register-handler,
+.login-handler {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.register-handler:hover,
+.login-handler:hover {
+  text-decoration: underline;
+}
+
+/* Cart button styles */
 .cart-icon {
+  font-size: 1.5rem;
   background: none;
   border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
   color: white;
-  position: relative;
+  cursor: pointer;
+}
+
+.cart-icon:hover {
+  color: #f39c12;
 }
 
 .cart-count {
+  font-size: 1.1rem;
+  color: #f39c12;
   position: absolute;
-  top: -8px;
-  right: -10px;
-  background-color: red;
-  color: white;
+  top: 5px;
+  right: 10px;
+  background-color: #c0392b;
+  padding: 2px 5px;
   border-radius: 50%;
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    width: 100%;
+    justify-content: flex-start;
+    margin: 5px 0;
+  }
+
+  .navbar-title h2 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .cart-icon {
+    font-size: 1.4rem;
+  }
+
+  .form-handlers {
+    flex-direction: column;
+  }
+
+  .register-handler,
+  .login-handler {
+    margin: 5px 0;
+  }
+}
+
 
 /* Product List Styles */
 .product-list {
@@ -68,7 +180,7 @@ body {
 .product-card button {
   margin-top: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: #1e88e5;
+  background-color: #F57C00 ;
   color: white;
   border: none;
   border-radius: 4px;
@@ -77,7 +189,7 @@ body {
 }
 
 .product-card button:hover {
-  background-color: #1565c0;
+  background-color: #b86818 ;
 }
 
 /* Cart Styles */
@@ -159,7 +271,7 @@ body {
   margin: 1rem 0.5rem;
   padding: 10px 20px;
   font-size: 1rem;
-  background-color: #007bff;
+  background-color: #F57C00 ;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -169,7 +281,7 @@ body {
 
 .register-toggle-btn:hover,
 .login-toggle-btn:hover {
-  background-color: #0056b3;
+  background-color: #F57C00 ;
 }
 
 .form-container {
@@ -217,7 +329,7 @@ body {
   width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
-  background-color: #28a745;
+  background-color: #F57C00 ;
   color: white;
   border: none;
   border-radius: 6px;
@@ -318,12 +430,98 @@ body {
 }
 
 .pagination-controls button.active {
-  background-color: #007bff;
+  background-color: #F57C00 ;
   color: white;
-  border-color: #007bff;
+  border-color: #F57C00 ;
 }
 
 .pagination-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Overall page container */
+.profile-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Header section */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profile-header h2 {
+  font-size: 28px;
+  color: #1a1a1a;
+}
+
+/* Logout button */
+.logout-button {
+  background: linear-gradient(to right, #ff6a6a, #F57C00);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.logout-button:hover {
+  background: linear-gradient(to right, #e60000, #cc0000);
+  transform: scale(1.05);
+}
+
+/* User details */
+.user-details {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.user-details p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+/* Order section */
+.order-list {
+  list-style: none;
+  padding: 0;
+}
+
+.order-item {
+  background-color: #fefefe;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s ease;
+}
+
+.order-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.order-item p {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+.order-item hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin-top: 12px;
 }

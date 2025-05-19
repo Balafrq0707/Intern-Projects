@@ -1,15 +1,23 @@
 const mysql = require('mysql2/promise'); 
+const sequelize = require('sequelize')
 
-const pool = mysql.createPool({
-    connectionLimit: 10,
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
-});
+const host =  process.env.DB_HOST;
+const user =  process.env.DB_USER;
+const password =  process.env.DB_PASS; 
+const database =  process.env.DB_NAME; 
+const port = process.env.DB_PORT
+const dialect = process.env.DB_DIALECT
 
-pool.getConnection()
-    .then(() => console.log('MySQL connected successfully!'))
-    .catch((err) => console.error('Error connecting to DB:', err));
+const connectDB = new sequelize(database, user, password, {
+    host: host, 
+    port: port, 
+    dialect: dialect
+} )
 
-module.exports = pool;
+connectDB.authenticate().then(()=>{
+    console.log('Connection successful')
+}).catch((error)=>{
+    console.error(error)
+})
+
+module.exports = connectDB;

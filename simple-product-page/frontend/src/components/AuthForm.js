@@ -2,15 +2,19 @@ import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { useCart } from './Cart/CartContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setSession } from './slices/Slice';
 
 const AuthForm = ({ type }) => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState(type || 'Login'); 
-  const { setSession, getCartItemCount} = useCart();
+  const { getCartItemCount} = useCart();
 
   const navigate = useNavigate(); 
+
+  const dispatch = useDispatch();
 
   const location = useLocation();
 
@@ -21,13 +25,15 @@ const AuthForm = ({ type }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newEntry = { userName, email, password };
+    const newEntry = { username: userName, email, password };
     const endpoint = mode === 'Register' ? 'register' : 'login';
+
 
     try {
       const res = await fetch(`http://localhost:3001/auth/${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        },
         body: JSON.stringify(newEntry),
       });
 
@@ -37,7 +43,8 @@ const AuthForm = ({ type }) => {
 
       if (res.ok) {
         if (mode === 'Login') {
-          setSession(data.user); 
+          localStorage.setItem('token', data.token);
+          dispatch(setSession(data.user));
           console.log(`Login Successful! Hello ${data.user?.userName}`); 
           if(getCartItemCount()===0){
             navigate('/');
@@ -47,9 +54,11 @@ const AuthForm = ({ type }) => {
             }          
         } else {
           console.log('Registration successful!');
+          localStorage.setItem('token', data.token);
           setUserName('');
           setEmail('');
           setPassword('');
+          navigate('/login');
         }
       }
       

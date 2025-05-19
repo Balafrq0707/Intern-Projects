@@ -9,7 +9,6 @@ const router = express.Router();
 router.get('/products', async (req, res) => {
     try {
         const [products] = await pool.query('SELECT id, title, description, price, quantity FROM products');
-        console.log(products); // Log products to verify the data
         res.json(products);
     } catch (err) {
         console.error('Error fetching products:', err);
