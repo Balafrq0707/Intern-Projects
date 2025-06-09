@@ -7,6 +7,10 @@
       autoIncrement: true,
       primaryKey: true,
     },
+    profile_img: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
     username: {
       type: DataTypes.STRING,
       allowNull: false,

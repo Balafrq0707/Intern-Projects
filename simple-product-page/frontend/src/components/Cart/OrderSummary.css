@@ -1,0 +1,67 @@
+.order-summary-card {
+  max-width: 700px;
+  margin: 1rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #fefefe;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.order-summary-card h3 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.order-summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 1rem;
+  color: #555;
+}
+
+.order-summary-item span {
+  flex: 1;
+  text-align: center;
+}
+
+.total-price {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #222;
+}
+
+button {
+  /* display: block; */
+  width: 100%;
+  margin-top: 2rem;
+  padding: 0.8rem;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #43a047;
+}
+

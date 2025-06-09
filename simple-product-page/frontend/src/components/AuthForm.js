@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { useCart } from './Cart/CartContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { setSession } from './slices/Slice';
 
@@ -9,13 +10,11 @@ const AuthForm = ({ type }) => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [mode, setMode] = useState(type || 'Login'); 
-  const { getCartItemCount} = useCart();
+  const [mode, setMode] = useState(type || 'Login');
+  const { getCartItemCount } = useCart();
 
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const location = useLocation();
 
   useEffect(() => {
@@ -28,48 +27,44 @@ const AuthForm = ({ type }) => {
     const newEntry = { username: userName, email, password };
     const endpoint = mode === 'Register' ? 'register' : 'login';
 
-
     try {
       const res = await fetch(`http://localhost:3001/auth/${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry),
       });
 
       const data = await res.json();
       console.log("API response:", data);
 
-
       if (res.ok) {
+        const token = data.token;
+        localStorage.setItem('token', token);
+
+        const decoded = jwtDecode(token);
+        dispatch(setSession(decoded));   
         if (mode === 'Login') {
-          localStorage.setItem('token', data.token);
-          dispatch(setSession(data.user));
-          console.log(`Login Successful! Hello ${data.user?.userName}`); 
-          if(getCartItemCount()===0){
+          console.log(`Login Successful! Hello ${decoded.username}`);
+          if (getCartItemCount() === 0) {
             navigate('/');
+          } else {
+            navigate('/cart/summary');
           }
-          else{
-             navigate('/cart/summary');
-            }          
         } else {
           console.log('Registration successful!');
-          localStorage.setItem('token', data.token);
           setUserName('');
           setEmail('');
           setPassword('');
           navigate('/login');
         }
-      }
-      
-      else {
+      } else {
         console.error('Server error:', data.message);
-      }  
-  }
-  catch (error) {
-    console.error('Network error:', error);
-  }
-}
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+
   return (
     <div>
       <div className="toggle-buttons">

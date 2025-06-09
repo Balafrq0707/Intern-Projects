@@ -1,16 +1,11 @@
 import { useCart } from './CartContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector} from 'react-redux';
-// import { setSession, logout } from '../slices/Slice';
-
-
-
+import { useSelector } from 'react-redux';
+import '../../App.css';
 const OrderSummary = () => {
-  const { cart, proceedToBuy } = useCart();
+  const { cart, proceedToBuy, clearCart } = useCart(); 
   const session = useSelector((state) => state.session.session);
-  // const dispatch = useDispatch();
-  
 
   const [orderSummary, setOrderSummary] = useState([]);
   const navigate = useNavigate();
@@ -22,31 +17,49 @@ const OrderSummary = () => {
 
   const handleOrder = async () => {
     if (!session) {
-      alert("Please login before placing an order.");
+      alert('Please login before placing an order.');
       navigate('/login');
       return;
     }
 
     const newEntry = {
-      userName: session.username, 
-      email: session.email, 
-      orderItems: orderSummary, 
+      userName: session.username,
+      email: session.email,
+      orderItems: orderSummary,
     };
 
     try {
-      const res = await fetch('http://localhost:3001/api/orders', {
+      // Step 1: Send order to backend
+      const orderRes = await fetch('http://localhost:3001/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry),
       });
-      console.log(session)
-      if (res.ok) {
-        alert('Your order has been successfully placed!');
-      } else {
+
+      if (!orderRes.ok) {
         alert('Something went wrong placing your order.');
+        return;
       }
+
+      // Step 2: Update inventory for each product
+      for (const item of orderSummary) {
+        const invRes = await fetch(`http://localhost:3001/api/products/${item.id}/decrement-inventory`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: item.qty }),
+        });
+
+        if (!invRes.ok) {
+          const errorData = await invRes.json();
+          alert(`Inventory update failed for ${item.title}: ${errorData.message}`);
+          return;
+        }
+      }
+      alert('Your order has been successfully placed!');
+       
+      navigate('/'); 
+      clearCart();
+
     } catch (err) {
       console.error('Order request failed:', err);
       alert('Network error while placing your order.');

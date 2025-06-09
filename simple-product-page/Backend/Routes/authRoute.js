@@ -40,9 +40,11 @@ router.post('/register', async (req, res) => {
       password: hashedPassword
     });
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
-    });
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email, username: newUser.username },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
+    );
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -78,7 +80,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Wrong password' });
     }
 
-    const token = jwt.sign({ email, username: user.username }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ email, username: user.username, id: user.id, profile_img: user.profile_img }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN || '1d',
     });
 
@@ -89,7 +91,8 @@ router.post('/login', async (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        location: user.location
+        location: user.location, 
+        profile_img: user.profile_img
       }
     });
   } catch (err) {

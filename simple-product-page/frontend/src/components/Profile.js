@@ -1,58 +1,84 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-// import { useCart } from './Cart/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { logout } from './slices/Slice';
 import { useDispatch } from 'react-redux';
-
+import ProfileImageUploader from './ProfileImg';
+import '../App.css'
 const Profile = () => {
   const { userId } = useParams();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const res = await fetch(`http://localhost:3001/profile/${userId}`, {
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`http://localhost:3001/profile/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-        const data = await res.json();
-        setUserProfile(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-        setLoading(false);
-      }
-    };
+      const data = await res.json();
 
+      if (!res.ok) {
+        alert(data.message);
+        navigate('/');
+        return;
+      }
+
+      setUserProfile(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (userId) fetchUserProfile();
   }, [userId]);
 
   const handleLogout = () => {
-   dispatch(logout()) ; 
+    dispatch(logout());
     navigate('/');
   };
 
   if (loading) return <p>Loading profile...</p>;
   if (!userProfile) return <p>User not found.</p>;
 
-  const { userName, email, Location, orders } = userProfile;
-
-  console.log("User Profile Data:", userProfile);
-
+  const { userName, email, Location, orders, profile_img } = userProfile;
 
   return (
     <div className="profile-container">
       <div className="profile-header">
-        <h2>User Profile</h2>
+        <h2 style={{fontSize: 'x-large'}}>{userName}'s Profile</h2>
         <button className="logout-button" onClick={handleLogout}>Logout</button>
+      </div>
+
+      <div className="profile-image-section">
+          <img
+            src={profile_img || 'https://via.placeholder.com/150'}
+            alt="Profile"
+            className="profile-image"
+          />
+        
+        {editMode && (
+          <div className="uploader-wrapper">
+            <ProfileImageUploader userId={userId} onUploadSuccess={fetchUserProfile} />
+          </div>
+        )}
+        <div>
+          <button
+            className={`edit-button ${editMode ? 'cancel' : ''}`}
+            onClick={() => setEditMode(!editMode)}
+          >
+            {editMode ? 'Cancel' : 'Edit Profile Picture'}
+          </button>
+        </div>  
       </div>
 
       <div className="user-details">
@@ -71,7 +97,6 @@ const Profile = () => {
                 <p><strong>Order ID:</strong> {order.id}</p>
                 <p><strong>Quantity:</strong> {item.quantity}</p>
                 <p><strong>Total Price:</strong> ${item.total_price}</p>
-                <hr />
               </li>
             ))
           )}

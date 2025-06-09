@@ -15,8 +15,9 @@ const CartView = () => {
   };
 
   return (
+    <div className="cart-wrapper">
     <div className="cart-container">
-      <button className="back-button" onClick={handleBack}>⬅️ Back to Shop</button>
+      <button className="back-button" onClick={handleBack}> Back to Shop</button>
       <h2>Your Cart</h2>
 
       {cartItems.length === 0 ? (
@@ -27,9 +28,13 @@ const CartView = () => {
             <li key={item.id}>
               <strong>{item.title || item.name || item.productTitle}</strong>
               <div className="quantity-controls">
-                <button onClick={() => decreaseQuantity(item)}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => increaseQuantity(item)}>+</button>
+                <div>
+                  <button onClick={() => decreaseQuantity(item)}>-</button>
+                </div>
+                  <span>{item.quantity}</span>
+                <div>
+                 <button onClick={() => increaseQuantity(item)}>+</button>
+                </div>
               </div>
               <p>Price: ${item.quantity * item.price}</p>
             </li>
@@ -41,6 +46,7 @@ const CartView = () => {
         <button onClick={handleProceed}>Proceed To Buy</button>
       )}
     </div>
+  </div>
   );
 };
 

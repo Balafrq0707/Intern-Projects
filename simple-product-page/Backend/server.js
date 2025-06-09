@@ -19,6 +19,8 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/images', express.static(path.join(__dirname, 'utils')));
+
 
 app.use('/auth', authRouter);
 app.use('/api', productRouter);
