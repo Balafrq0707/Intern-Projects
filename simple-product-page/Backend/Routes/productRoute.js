@@ -3,7 +3,9 @@
   const Product = require('../Model/productModel');
   const sequelize = require('../db/connectDB'); 
   const Rating = require('../Model/ratingModel');
- 
+  const cloudinary = require('../cloudConfig'); 
+  const upload = require('../Middleware/productMiddleware');
+  const verifyToken = require('../Middleware/staffAuth'); 
 
   Product.hasMany(Rating, { foreignKey: 'productId' });
   Rating.belongsTo(Product, { foreignKey: 'productId' });
@@ -17,8 +19,6 @@
 
 
       const updatedProducts = products.map(product => {
-        console.log('Raw product image value:', product.image);
-
         return {
           ...product.toJSON(),
          image: product.image || null
@@ -32,6 +32,8 @@
       res.status(500).json({ message: 'Failed to fetch products' });
     }
   });
+
+
 
   router.post('/products/:id/decrement-inventory', async (req, res) => {
     const { id } = req.params;
@@ -136,5 +138,104 @@ router.get('/products/:id', async (req, res) => {
   }
 });
 
+// Dashboard Routes
+
+// Adding new products from dashboard
+  router.post('/products', verifyToken, upload.single('image'), async (req, res) => {
+
+
+  try {
+    const { title, description, category, price, inventory } = req.body;
+    const role = req.staff.role; 
+
+    console.log(role);
+
+    if(role!== 'admin'){
+       return res.status(403).json({ message: 'Access denied. You cannot access this functionality.' });
+    }   
+
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'Image is required' });
+    }
+
+    // Upload image to Cloudinary
+    const streamUpload = (buffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'products' },
+          (error, result) => {
+            if (result) resolve(result.secure_url);
+            else reject(error);
+          }
+        );
+        stream.end(buffer);
+      });
+    };
+
+    const imageUrl = await streamUpload(req.file.buffer);
+
+    // Insert into database using Sequelize
+    const product = await Product.create({
+      category,
+      title,
+      description,
+      price,
+      inventory,
+      image: imageUrl,
+      rating: 0,
+      numRatings: 0,
+    });
+
+    res.status(201).json({ message: 'Product created', product });
+  } catch (error) {
+    console.error('Error adding product:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Updating existing product from dashboard
+router.put('/products/:id', verifyToken,  upload.single('image'), async (req, res) => {
+  try {
+    const { title, description, category, price, inventory } = req.body;
+    const image = req.file ? req.file.filename : undefined;
+
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    await product.update({
+      title,
+      description,
+      category,
+      price,
+      inventory,
+      ...(image && { image }) // only update image if new one provided
+    });
+
+    res.json({ message: 'Product updated successfully', product });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// deleting the product from the dashboard
+router.delete('/products/:id', verifyToken, async (req, res) => {
+  const role = req.staff.role;
+
+  if (role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied. You cannot access this functionality.' });
+  }
+
+  try {
+    await Product.destroy({
+      where: { id: req.params.id }
+    });
+
+    res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error during deletion' });
+  }
+});
 
 module.exports = router;

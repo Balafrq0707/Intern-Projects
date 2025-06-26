@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "dashboard",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,12 +10,10 @@
     "@testing-library/user-event": "^13.5.0",
     "crypto-js": "^4.2.0",
     "jwt-decode": "^4.0.0",
-    "lucide-react": "^0.510.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
-    "react-responsive-carousel": "^3.2.23",
+    "react-router-dom": "^7.6.2",
     "react-scripts": "5.0.1",
     "recharts": "^2.15.3",
     "web-vitals": "^2.1.4"
@@ -43,8 +41,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "react-router-dom": "^7.5.3"
   }
 }

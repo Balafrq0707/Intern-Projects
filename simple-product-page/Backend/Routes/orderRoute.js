@@ -5,6 +5,7 @@ const User = require('../Model/AuthModel');
 const Order = require('../Model/orderModel');
 const OrderItem = require('../Model/orderItemsModel');
 const Product = require('../Model/productModel');
+const { Op } = require('sequelize');
 const authenticateToken = require('../Middleware/authMiddleware')
 
 
@@ -24,6 +25,25 @@ router.get('/orders', authenticateToken, async (req, res) => {
     res.json(orders);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// Graph Route
+router.get('/orders/summary', async (req, res) => {
+  try {
+    const ordersByDate = await Order.findAll({
+      attributes: [
+        [sequelize.fn('DATE', sequelize.col('createdAt')), 'date'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'totalOrders']
+      ],
+      group: [sequelize.fn('DATE', sequelize.col('createdAt'))],
+      order: [[sequelize.fn('DATE', sequelize.col('createdAt')), 'ASC']]
+    });
+
+    res.json(ordersByDate);
+  } catch (err) {
+    console.error('Failed to fetch orders summary:', err);
+    res.status(500).json({ message: 'Failed to get orders summary', error: err.message });
   }
 });
 
@@ -107,5 +127,83 @@ router.get('/orders/user/:userId/details', async (req, res) => {
     res.status(500).json({ message: 'Failed to retrieve detailed order info.' });
   }
 });
+  router.get('/dashboard/allOrders', async (req, res) => {
+  try {
+    const orders = await User.findAll({
+      attributes:['id','userName','email', 'Location'],
+      include: [
+        {
+          model: Order,
+          include: [
+            {
+              model: OrderItem,
+              attributes: ['quantity', 'total_price', 'product_id'],
+              include: [
+                {
+                  model: Product,
+                  attributes: ['id', 'title']
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    const plainOrders = orders.map(user => user.toJSON());
+    console.log(plainOrders[0].Orders[0].OrderItems[0].Product.id); 
+    res.json(plainOrders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
+router.delete('/orders/:id/:productId', async (req, res) => {
+  const { id: orderId, productId } = req.params;
+  const t = await sequelize.transaction();
+
+  try {
+    // First, delete the OrderItem
+    const deleteOrderItem = await OrderItem.destroy({
+      where: {
+        order_id: orderId,
+        product_id: productId,
+      },
+      transaction: t,
+    });
+
+    // Then, delete the Order if it no longer has items
+    const remainingItems = await OrderItem.findAll({
+      where: { order_id: orderId },
+      transaction: t,
+    });
+
+    let deleteOrder = 0;
+
+    if (remainingItems.length === 0) {
+      deleteOrder = await Order.destroy({
+        where: { id: orderId },
+        transaction: t,
+      });
+    }
+
+    await t.commit();
+
+    if (deleteOrderItem) {
+      return res.status(200).json({
+        message: `Order item deleted${deleteOrder ? ' and order removed' : ''}.`,
+      });
+    } else {
+      return res.status(404).json({ message: 'Order item not found.' });
+    }
+  } catch (err) {
+    await t.rollback();
+    console.error(`Error deleting order ${orderId}:`, err);
+    return res.status(500).json({ message: 'Failed to delete order.' });
+  }
+});
+
 
 module.exports = router;

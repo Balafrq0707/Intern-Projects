@@ -8,11 +8,14 @@ const authRouter = require('./Routes/authRoute');
 const productRouter = require('./Routes/productRoute');
 const orderRouter = require('./Routes/orderRoute');
 const profileRouter = require('./Routes/profileRoute');
+const dashAuthRouter = require('./Routes/dashAuthRoute');
+const dashboardRouter = require('./Routes/dashboardRoute'); 
 const sequelize = require('./db/connectDB');
 require('./Model/AuthModel');
 require('./Model/orderItemsModel');
 require('./Model/orderModel');
 require('./Model/productModel');
+require('./Model/staffModel')
 
 const PORT = process.env.PORT || 3001;
 
@@ -26,6 +29,9 @@ app.use('/auth', authRouter);
 app.use('/api', productRouter);
 app.use('/api', orderRouter);
 app.use('/profile', profileRouter);
+app.use('/dashboard/auth', dashAuthRouter); 
+app.use('/dashboard',dashboardRouter);
+
 
 sequelize.sync()  
   .then(() => {

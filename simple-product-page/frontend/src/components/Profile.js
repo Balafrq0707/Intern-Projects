@@ -23,6 +23,7 @@ const Profile = () => {
         },
       });
       const data = await res.json();
+      console.log(data); 
 
       if (!res.ok) {
         alert(data.message);
@@ -50,7 +51,7 @@ const Profile = () => {
   if (loading) return <p>Loading profile...</p>;
   if (!userProfile) return <p>User not found.</p>;
 
-  const { userName, email, Location, orders, profile_img } = userProfile;
+  const { userName, email, Location, Orders: orders, profile_img } = userProfile;
 
   return (
     <div className="profile-container">

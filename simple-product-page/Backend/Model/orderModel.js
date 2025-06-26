@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db/connectDB'); 
 
-const order = sequelize.define('order', {
+const Order = sequelize.define('Order', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -17,8 +17,8 @@ const order = sequelize.define('order', {
     }
 }, {
     tableName: 'orders',
-    timestamps: false,
+    timestamps: true,
 }
 )
 
-module.exports = order; 
+module.exports = Order; 
